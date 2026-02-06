@@ -101,21 +101,17 @@ export default function ProductCard({
                     <FavoriteButton productId={productId || id} size="sm" />
                 </div>
 
-                {/* Retailer Logo */}
-                <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 rounded-lg sm:rounded-xl p-1 sm:p-1.5 border border-[var(--border-color)]"
-                    style={{
-                        background: 'var(--card-bg)',
-                        boxShadow: 'var(--shadow-md)'
-                    }}>
-                    {retailerLogo ? (
-                        <img src={retailerLogo} alt={retailerName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
-                    ) : (
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-[10px] sm:text-xs font-bold text-[var(--text-secondary)]"
-                            style={{ background: 'var(--bg-tertiary)' }}>
-                            {retailerName.slice(0, 2).toUpperCase()}
-                        </div>
-                    )}
-                </div>
+                {retailerLogo && (
+                    <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 rounded-lg sm:rounded-xl p-1 sm:p-1.5 border border-[var(--border-color)]"
+                        style={{
+                            background: 'var(--card-bg)',
+                            boxShadow: 'var(--shadow-md)'
+                        }}>
+                        {retailerLogo && (
+                            <img src={retailerLogo} alt={retailerName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Content */}

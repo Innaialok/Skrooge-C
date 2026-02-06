@@ -113,11 +113,18 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
                 <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                    <img
-                        src="/logo.png"
-                        alt="Skrooge"
-                        className="h-10 shrink-0 object-contain dark:brightness-0 dark:invert"
-                    />
+                    <div className="relative h-10 w-32">
+                        <img
+                            src="/logo.png"
+                            alt="Skrooge"
+                            className="h-10 w-full object-contain dark:hidden"
+                        />
+                        <img
+                            src="/logo-white.png"
+                            alt="Skrooge"
+                            className="h-10 w-full object-contain hidden dark:block"
+                        />
+                    </div>
                 </Link>
                 {/* Mobile close button */}
                 <button
@@ -217,48 +224,7 @@ export default function Sidebar() {
                     })}
                 </div>
 
-                {/* Categories Dropdown */}
-                <div className="relative">
-                    <button
-                        onClick={() => setCategoriesOpen(!categoriesOpen)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isCategoryActive
-                            ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                            : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
-                            }`}
-                    >
-                        <Grid3X3 className={`w-5 h-5 shrink-0 ${isCategoryActive ? 'text-[var(--accent)]' : ''}`} />
-                        <span className="font-medium flex-1 text-left">Categories</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${categoriesOpen ? 'rotate-180' : ''}`} />
-                    </button>
 
-                    {/* Dropdown Menu */}
-                    {categoriesOpen && (
-                        <div className="mt-1 ml-4 pl-4 border-l-2 border-[var(--border-color)] space-y-1">
-                            <Link
-                                href="/categories"
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-all"
-                            >
-                                <span className="text-base">📋</span>
-                                <span>All Categories</span>
-                            </Link>
-                            {categories.map((category) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/category/${category.slug}`}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${pathname === `/category/${category.slug}`
-                                        ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
-                                        }`}
-                                >
-                                    <span className="text-base">{category.icon || '📦'}</span>
-                                    <span>{category.name}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </div>
 
                 {/* Account Section */}
                 <div className="pt-6">
@@ -367,11 +333,18 @@ export default function Sidebar() {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-50">
                 <Link href="/" className="flex items-center">
-                    <img
-                        src="/logo.png"
-                        alt="Skrooge"
-                        className="h-9 shrink-0 object-contain dark:brightness-0 dark:invert"
-                    />
+                    <div className="relative h-9 w-28">
+                        <img
+                            src="/logo.png"
+                            alt="Skrooge"
+                            className="h-9 w-full object-contain dark:hidden"
+                        />
+                        <img
+                            src="/logo-white.png"
+                            alt="Skrooge"
+                            className="h-9 w-full object-contain hidden dark:block"
+                        />
+                    </div>
                 </Link>
                 <button
                     onClick={() => setMobileOpen(true)}

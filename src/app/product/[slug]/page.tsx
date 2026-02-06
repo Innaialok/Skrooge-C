@@ -152,14 +152,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                             href={`/go/${product.deals[0].id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="btn-primary"
+                                            className="btn-primary flex-1 md:flex-none justify-center px-8 py-3 text-base"
                                         >
                                             Go to Best Deal
-                                            <ExternalLink className="w-4 h-4" />
+                                            <ExternalLink className="w-5 h-5" />
                                         </a>
                                     )}
-                                    <button className="btn-secondary">
-                                        <Bell className="w-4 h-4" />
+                                    <button className="btn-secondary flex-1 md:flex-none justify-center px-6 py-3 text-base">
+                                        <Bell className="w-5 h-5" />
                                         Set Price Alert
                                     </button>
                                 </div>
@@ -280,6 +280,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

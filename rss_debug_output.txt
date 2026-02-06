@@ -1,0 +1,23 @@
+--- RAW ITEM XML START ---
+
+ <title>[Switch 2] Donkey Kong Bonanza $40 @ Costco North Lakes (Membership Required)</title>
+ <link>https://www.ozbargain.com.au/node/947148</link>
+ <description><![CDATA[<div><img src="https://files.ozbargain.com.au/n/48/947148l.jpg?h=fa4243c7"/></div><p>Nintendo Switch 2 Donkey Kong Bonanza $40.00. In-store only, and not sure if available at this price in other stores. Membership required or get a friend to buy you a gift card. </p>]]></description>
+ <comments>https://www.ozbargain.com.au/node/947148#comment</comments>
+ <category domain="https://www.ozbargain.com.au/cat/gaming">Gaming</category>
+ <category domain="https://www.ozbargain.com.au/product/donkey-kong-bananza">Donkey Kong Bananza</category>
+ <category domain="https://www.ozbargain.com.au/brand/nintendo">Nintendo</category>
+ <category domain="https://www.ozbargain.com.au/tag/physical-media-video-game">Physical Media (Video Game)</category>
+ <category domain="https://www.ozbargain.com.au/tag/switch-2-game">Switch 2 Game</category>
+ <category domain="https://www.ozbargain.com.au/tag/video-game">Video Game</category>
+ <ozb:meta comment-count="2" link="https://www.ozbargain.com.au/goto/947148" click-count="105" votes-pos="4" votes-neg="0" url="https://files.ozbargain.com.au/upload/46844/127166/dk.jpg" image="https://files.ozbargain.com.au/n/48/947148l.jpg?h=fa4243c7" />
+ <media:thumbnail url="https://files.ozbargain.com.au/n/48/947148l.jpg?h=fa4243c7" />
+ <pubDate>Fri, 06 Feb 2026 16:08:06 +1100</pubDate>
+ <dc:creator>bez-54</dc:creator>
+ <guid isPermaLink="false">947148 at https://www.ozbargain.com.au</guid>
+
+--- RAW ITEM XML END ---
+
+--- DESCRIPTION CONTENT START ---
+<![CDATA[<div><img src="https://files.ozbargain.com.au/n/48/947148l.jpg?h=fa4243c7"/></div><p>Nintendo Switch 2 Donkey Kong Bonanza $40.00. In-store only, and not sure if available at this price in other stores. Membership required or get a friend to buy you a gift card. </p>]]>
+--- DESCRIPTION CONTENT END ---

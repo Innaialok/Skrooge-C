@@ -4,10 +4,11 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const dealId = params.id;
+        const { id } = await params;
+        const dealId = id;
 
         if (!dealId) {
             return new NextResponse('Missing deal ID', { status: 400 });
