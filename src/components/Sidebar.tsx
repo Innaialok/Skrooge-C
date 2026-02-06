@@ -36,6 +36,7 @@ const dealTypeItems = [
     { href: '/deals?type=cashback', icon: '💰', label: 'Cashback' },
     { href: '/deals?type=coupon', icon: '🎟️', label: 'Coupons' },
     { href: '/deals?type=travel', icon: '✈️', label: 'Travel' },
+    { href: '/deals?type=groceries', icon: '🥑', label: 'Groceries' },
 ]
 
 const userItems = [

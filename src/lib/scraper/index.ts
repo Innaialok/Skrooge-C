@@ -219,6 +219,23 @@ export function detectDealType(title: string, retailerName: string): string {
         return 'travel';
     }
 
+    // Groceries deals
+    if (lowerTitle.includes('grocery') ||
+        lowerTitle.includes('groceries') ||
+        lowerTitle.includes('supermarket') ||
+        lowerTitle.includes('food') ||
+        lowerTitle.includes('snack') ||
+        lowerTitle.includes('chocolate') ||
+        lowerTitle.includes('coffee') ||
+        lowerTitle.includes('drink') ||
+        lowerRetailer.includes('woolworths') ||
+        lowerRetailer.includes('coles') ||
+        lowerRetailer.includes('aldi') ||
+        lowerRetailer.includes('iga') ||
+        lowerRetailer.includes('costco')) {
+        return 'groceries';
+    }
+
     return 'product';
 }
 

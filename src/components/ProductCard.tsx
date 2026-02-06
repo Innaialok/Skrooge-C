@@ -25,6 +25,7 @@ const dealTypeBadges: Record<string, { label: string; bg: string; icon: string }
     store: { label: 'Sale', bg: 'linear-gradient(135deg, #f97316, #ea580c)', icon: '🏷️' },
     coupon: { label: 'Coupon', bg: 'linear-gradient(135deg, #22c55e, #16a34a)', icon: '🎟️' },
     travel: { label: 'Travel', bg: 'linear-gradient(135deg, #0ea5e9, #0369a1)', icon: '✈️' },
+    groceries: { label: 'Groceries', bg: 'linear-gradient(135deg, #22c55e, #84cc16)', icon: '🥑' },
 }
 
 // Deal type card gradient configurations
@@ -34,6 +35,7 @@ const dealTypeCardGradients: Record<string, string> = {
     cashback: 'linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(239, 68, 68, 0.15))',        // Black → Red
     coupon: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.15))',     // Red → Orange
     travel: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(6, 182, 212, 0.15))',     // Blue → Cyan
+    groceries: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(234, 179, 8, 0.15))',   // Green → Yellow
 }
 
 // Deal type border colors for hover
@@ -43,6 +45,7 @@ const dealTypeBorderColors: Record<string, string> = {
     cashback: '#ef4444',  // Red
     coupon: '#f97316',    // Orange
     travel: '#0ea5e9',    // Sky blue
+    groceries: '#22c55e', // Green
 }
 
 export default function ProductCard({
