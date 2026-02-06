@@ -204,13 +204,8 @@ export class OzBargainScraper extends BaseScraper {
             }
         }
 
-        // Clean description - remove HTML tags
-        const cleanDescription = item.description
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/\s+/g, ' ')
-            .replace(/&nbsp;/g, ' ')
-            .trim()
-            .substring(0, 500);
+        // Clean description - comprehensive cleanup
+        const cleanDescription = this.cleanDescription(item.description, item.title);
 
         // Detect category based on keywords in title
         const category = this.detectCategory(item.title, retailerName);
@@ -275,6 +270,90 @@ export class OzBargainScraper extends BaseScraper {
         }
 
         return undefined;
+    }
+    /**
+     * Clean and format description - remove OzBargain-specific content
+     */
+    private cleanDescription(rawDescription: string, title: string): string | undefined {
+        if (!rawDescription) return undefined;
+
+        let desc = rawDescription
+            // Remove all HTML tags
+            .replace(/<[^>]+>/g, ' ')
+            // Decode HTML entities
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            // Remove URLs
+            .replace(/https?:\/\/[^\s]+/gi, '')
+            // Remove "Go to Deal" and similar link text
+            .replace(/\b(go to deal|view deal|buy now|shop now|get deal|click here|read more)\b/gi, '')
+            // Remove OzBargain referral/affiliate mentions
+            .replace(/\b(referral|affiliate|ref link|ref code)\b[^.]*\./gi, '')
+            // Remove user attribution like "Posted by username" or "via username"
+            .replace(/\b(posted by|submitted by|via|by|from)\s+[@\w]+\b/gi, '')
+            // Remove OzBargain-specific phrases
+            .replace(/\b(ozbargain|ozb|bargain|deal alert|price error|hot deal|expired|targeted|ymmv)\b:?\s*/gi, '')
+            // Remove price mentions (we show price separately)
+            .replace(/\$\d+(?:\.\d{2})?(?:\s*[-–]\s*\$\d+(?:\.\d{2})?)?/g, '')
+            // Remove "was $X" mentions
+            .replace(/was\s*\$?\d+(?:\.\d{2})?/gi, '')
+            // Remove percentage off mentions (we show discount separately)
+            .replace(/\d+%\s*off\b/gi, '')
+            // Remove common coupon code patterns if they're in the title
+            .replace(/\b(code|coupon|promo|voucher):\s*\w+\b/gi, '')
+            // Remove @ retailer mentions (we show retailer separately)
+            .replace(/@\s*[\w\s&]+(?:\(|$)/g, '')
+            // Remove "Delivery: " cost mentions
+            .replace(/\bdelivery[:\s]+\$?\d+(?:\.\d{2})?\b/gi, '')
+            .replace(/\bfree\s+(?:shipping|delivery)\b/gi, '')
+            // Remove image alt text remnants
+            .replace(/\[image\]/gi, '')
+            // Remove empty parentheses and brackets
+            .replace(/\(\s*\)/g, '')
+            .replace(/\[\s*\]/g, '')
+            // Clean up punctuation
+            .replace(/\s*[,;]\s*[,;]\s*/g, ', ')
+            .replace(/\.{2,}/g, '.')
+            .replace(/\s+\./g, '.')
+            .replace(/\.\s+\./g, '.')
+            // Remove multiple spaces
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        // Remove leading/trailing punctuation
+        desc = desc.replace(/^[,;:\s.]+/, '').replace(/[,;:\s]+$/, '');
+
+        // Capitalize first letter
+        if (desc.length > 0) {
+            desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+        }
+
+        // Ensure it ends with proper punctuation
+        if (desc.length > 0 && !desc.match(/[.!?]$/)) {
+            desc += '.';
+        }
+
+        // If description is too short or mostly the same as title, skip it
+        if (desc.length < 20) return undefined;
+
+        // Check if description is mostly redundant with title
+        const titleWords = title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+        const descWords = desc.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+        const overlap = titleWords.filter(w => descWords.includes(w)).length;
+        if (titleWords.length > 0 && overlap / titleWords.length > 0.8) {
+            return undefined; // Description is mostly the same as title
+        }
+
+        // Limit length
+        if (desc.length > 400) {
+            desc = desc.substring(0, 397) + '...';
+        }
+
+        return desc || undefined;
     }
 
     /**
