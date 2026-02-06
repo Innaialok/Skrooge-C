@@ -65,6 +65,7 @@ export default function Sidebar() {
     const pathname = usePathname()
     const { data: session, status } = useSession()
     const [categoriesOpen, setCategoriesOpen] = useState(false)
+    const [productDealsOpen, setProductDealsOpen] = useState(false)
     const [categories, setCategories] = useState<Category[]>(defaultCategories)
     const [mobileOpen, setMobileOpen] = useState(false)
     const { theme, toggleTheme } = useTheme()
@@ -156,7 +157,48 @@ export default function Sidebar() {
                     <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-3">
                         Deal Types
                     </p>
-                    {dealTypeItems.map((item) => {
+
+                    {/* Product Deals - Expandable with categories */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setProductDealsOpen(!productDealsOpen)}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${pathname.includes('/deals') && pathname.includes('type=product')
+                                    ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
+                                }`}
+                        >
+                            <span className="text-base w-5 text-center shrink-0">🛒</span>
+                            <span className="font-medium text-sm flex-1 text-left">Product Deals</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${productDealsOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {productDealsOpen && (
+                            <div className="mt-1 ml-4 pl-4 border-l-2 border-[var(--border-color)] space-y-1">
+                                <Link
+                                    href="/deals?type=product"
+                                    onClick={() => setMobileOpen(false)}
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-all"
+                                >
+                                    <span className="text-sm">📦</span>
+                                    <span>All Products</span>
+                                </Link>
+                                {categories.map((category) => (
+                                    <Link
+                                        key={category.id}
+                                        href={`/deals?type=product&category=${category.slug}`}
+                                        onClick={() => setMobileOpen(false)}
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-all"
+                                    >
+                                        <span className="text-sm">{category.icon || '📦'}</span>
+                                        <span>{category.name}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Other deal types - simple links */}
+                    {dealTypeItems.filter(item => item.label !== 'Product Deals').map((item) => {
                         const isActive = pathname + (typeof window !== 'undefined' ? window.location.search : '') === item.href
                         return (
                             <Link

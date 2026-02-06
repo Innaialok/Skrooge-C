@@ -15,11 +15,21 @@ const dealTypeConfig: Record<string, { title: string; icon: string; description:
     travel: { title: 'Travel Deals', icon: '✈️', description: 'Flights, hotels, and more' },
 }
 
-interface PageProps {
-    searchParams: Promise<{ type?: string }>
+// Category config for display
+const categoryConfig: Record<string, { title: string; icon: string }> = {
+    electronics: { title: 'Electronics', icon: '📱' },
+    computing: { title: 'Computing', icon: '💻' },
+    'home-garden': { title: 'Home & Garden', icon: '🏠' },
+    fashion: { title: 'Fashion', icon: '👕' },
+    gaming: { title: 'Gaming', icon: '🎮' },
+    sports: { title: 'Sports', icon: '⚽' },
 }
 
-async function getDeals(type?: string) {
+interface PageProps {
+    searchParams: Promise<{ type?: string; category?: string }>
+}
+
+async function getDeals(type?: string, categorySlug?: string) {
     const whereClause: Record<string, unknown> = {
         isExpired: false,
     }
@@ -28,10 +38,23 @@ async function getDeals(type?: string) {
         whereClause.dealType = type
     }
 
+    // If filtering by category, we need to filter by product's category
+    if (categorySlug) {
+        whereClause.product = {
+            category: {
+                slug: categorySlug
+            }
+        }
+    }
+
     const deals = await prisma.deal.findMany({
         where: whereClause,
         include: {
-            product: true,
+            product: {
+                include: {
+                    category: true
+                }
+            },
             retailer: true,
         },
         orderBy: { createdAt: 'desc' },
@@ -44,9 +67,11 @@ async function getDeals(type?: string) {
 export default async function DealsPage({ searchParams }: PageProps) {
     const params = await searchParams
     const dealType = params.type || undefined
-    const deals = await getDeals(dealType)
+    const category = params.category || undefined
+    const deals = await getDeals(dealType, category)
 
     const config = dealType ? dealTypeConfig[dealType] : null
+    const catConfig = category ? categoryConfig[category] : null
 
     return (
         <div className="min-h-screen">
@@ -67,23 +92,23 @@ export default async function DealsPage({ searchParams }: PageProps) {
             <div className="p-6">
                 {/* Header with back button if filtered */}
                 <div className="flex items-center gap-3 mb-6">
-                    {config && (
+                    {(config || catConfig) && (
                         <Link
-                            href="/deals"
+                            href={catConfig ? "/deals?type=product" : "/deals"}
                             className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors"
                         >
                             <ArrowLeft className="w-5 h-5 text-[var(--text-muted)]" />
                         </Link>
                     )}
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg text-xl">
-                        {config ? config.icon : <Flame className="w-5 h-5 text-white" />}
+                        {catConfig ? catConfig.icon : config ? config.icon : <Flame className="w-5 h-5 text-white" />}
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-                            {config ? config.title : 'All Deals'}
+                            {catConfig ? catConfig.title : config ? config.title : 'All Deals'}
                         </h1>
                         <p className="text-sm text-[var(--text-muted)]">
-                            {config ? config.description : `${deals.length} deals available`}
+                            {catConfig ? `${deals.length} ${catConfig.title.toLowerCase()} deals` : config ? config.description : `${deals.length} deals available`}
                         </p>
                     </div>
                 </div>
