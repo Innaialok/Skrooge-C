@@ -5,6 +5,9 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Heart, Loader2, ExternalLink, Trash2, ShoppingBag } from 'lucide-react'
+import { useToast } from '@/context/ToastContext'
+import { ProductCardSkeleton } from '@/components/Skeleton'
+import EmptyState from '@/components/EmptyState'
 
 interface Favorite {
     id: string
@@ -30,6 +33,7 @@ interface Favorite {
 export default function FavoritesPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const { showToast } = useToast()
     const [favorites, setFavorites] = useState<Favorite[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [removingId, setRemovingId] = useState<string | null>(null)
@@ -62,10 +66,10 @@ export default function FavoritesPage() {
         try {
             await fetch(`/api/favorites/${productId}`, { method: 'DELETE' })
             setFavorites(favorites.filter(f => f.productId !== productId))
-            // Removed toast
+            showToast("Removed from favorites", "success")
         } catch (error) {
             console.error('Error removing favorite:', error)
-            alert("Failed to remove favorite")
+            showToast("Failed to remove favorite", "error")
         } finally {
             setRemovingId(null)
         }
@@ -73,8 +77,28 @@ export default function FavoritesPage() {
 
     if (status === 'loading' || isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-2xl font-bold mb-8">My Favorites</h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <ProductCardSkeleton key={i} />
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    if (favorites.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-2xl font-bold mb-8">My Favorites</h1>
+                <EmptyState
+                    icon={Heart}
+                    title="No favorites yet"
+                    description="Start exploring deals and save the ones you like!"
+                    actionLabel="Explore Deals"
+                    actionLink="/"
+                />
             </div>
         )
     }

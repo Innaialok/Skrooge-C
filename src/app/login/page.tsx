@@ -5,12 +5,14 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, User, ArrowRight, Loader2, DollarSign } from 'lucide-react'
+import { useToast } from '@/context/ToastContext'
 
 export default function LoginPage() {
     const router = useRouter()
     const [isLogin, setIsLogin] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
+    const { showToast } = useToast()
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -33,7 +35,9 @@ export default function LoginPage() {
 
                 if (result?.error) {
                     setError(result.error)
+                    showToast("Sign in failed. Check your credentials.", "error")
                 } else {
+                    showToast("Welcome back!", "success")
                     router.push('/')
                     router.refresh()
                 }
@@ -49,6 +53,7 @@ export default function LoginPage() {
 
                 if (!res.ok) {
                     setError(data.error || 'Registration failed')
+                    showToast(data.error || "Registration failed", "error")
                 } else {
                     // Auto login after registration
                     const result = await signIn('credentials', {
@@ -58,6 +63,7 @@ export default function LoginPage() {
                     })
 
                     if (result?.ok) {
+                        showToast("Account created successfully!", "success")
                         router.push('/')
                         router.refresh()
                     }
@@ -65,6 +71,7 @@ export default function LoginPage() {
             }
         } catch (err) {
             setError('An error occurred. Please try again.')
+            showToast("An unexpected error occurred", "error")
         } finally {
             setIsLoading(false)
         }

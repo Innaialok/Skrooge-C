@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Share2, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
 import FavoriteButton from './FavoriteButton'
+import { useToast } from '@/context/ToastContext'
 
 interface ProductCardProps {
     id: string
@@ -67,6 +68,7 @@ export default function ProductCard({
     const cardGradient = dealTypeCardGradients[dealType] || dealTypeCardGradients['product'];
     const borderColor = dealTypeBorderColors[dealType] || dealTypeBorderColors['product'];
 
+    const { showToast } = useToast()
     const [votes, setVotes] = useState(0)
     const [userVote, setUserVote] = useState<1 | -1 | null>(null)
 
@@ -77,7 +79,7 @@ export default function ProductCard({
         // Mock auth check - assuming true for demo as requested
         const isAuthenticated = true
         if (!isAuthenticated) {
-            alert("Please sign in to vote")
+            showToast("Please sign in to vote", "error")
             return
         }
 

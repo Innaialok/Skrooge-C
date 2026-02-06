@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MessageCircle, Send, ThumbsUp, Reply } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useToast } from '@/context/ToastContext'
 
 interface Comment {
     id: string
@@ -51,11 +52,12 @@ export default function DiscussionBoard({ productId }: { productId: string }) {
     const [newComment, setNewComment] = useState('')
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
     const [replyContent, setReplyContent] = useState('')
+    const { showToast } = useToast()
 
     const handleSubmitComment = () => {
         if (!newComment.trim()) return
         if (!session?.user?.id) {
-            alert("Please sign in to post a comment")
+            showToast("Please sign in to post a comment", "error")
             return
         }
 
@@ -70,6 +72,7 @@ export default function DiscussionBoard({ productId }: { productId: string }) {
         }
         setComments([comment, ...comments])
         setNewComment('')
+        showToast("Comment posted successfully!", "success")
     }
 
     const handleSubmitReply = (parentId: string) => {

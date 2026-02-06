@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'
 import { User, Moon, Sun, Bell, Shield, LogOut, ChevronRight, Mail, Trash2 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import Link from 'next/link'
+import { useToast } from '@/context/ToastContext'
 
 export default function SettingsPage() {
     const { data: session, status } = useSession()
     const { theme, toggleTheme } = useTheme()
     const router = useRouter()
+    const { showToast } = useToast()
 
     if (status === 'loading') return null
 
@@ -106,7 +108,7 @@ export default function SettingsPage() {
                             icon={Bell}
                             label="Notifications"
                             value="Push notifications enabled"
-                            onClick={() => alert("Notification settings coming soon!")}
+                            onClick={() => showToast("Notification settings coming soon!", "info")}
                         />
                     </Section>
 
@@ -127,7 +129,7 @@ export default function SettingsPage() {
                         <button
                             onClick={() => {
                                 if (confirm('Are you sure? This cannot be undone.')) {
-                                    alert('Account deletion not implemented in demo')
+                                    showToast('Account deletion not implemented in demo', "error")
                                 }
                             }}
                             className="w-full p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-red-500 font-medium flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"

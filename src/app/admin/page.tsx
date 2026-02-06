@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Shield, RefreshCw, Trash2, Database, AlertTriangle, CheckCircle, Activity } from 'lucide-react'
+import { useToast } from '@/context/ToastContext'
 
 export default function AdminPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const { showToast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
     const [stats, setStats] = useState({
         scrapedToday: 0,
@@ -24,7 +26,7 @@ export default function AdminPage() {
 
     const handleScrape = async () => {
         setIsLoading(true)
-        // const toastId = toast.loading("Scraping started... this may take a while")
+        showToast("Scraping started... this may take a while", "info")
 
         try {
             const res = await fetch('/api/admin/scrape', {
@@ -34,12 +36,12 @@ export default function AdminPage() {
 
             if (res.ok) {
                 const data = await res.json()
-                alert(`Scrape complete! Found ${data.count || 'new'} deals`)
+                showToast(`Scrape complete! Found ${data.count || 'new'} deals`, "success")
             } else {
                 throw new Error('Scrape failed')
             }
         } catch (error) {
-            alert("Scraping failed to start")
+            showToast("Scraping failed to start", "error")
         } finally {
             setIsLoading(false)
         }
@@ -52,12 +54,12 @@ export default function AdminPage() {
         try {
             const res = await fetch('/api/admin/clear-deals', { method: 'POST' })
             if (res.ok) {
-                alert("Expired deals cleared")
+                showToast("Expired deals cleared", "success")
             } else {
-                alert("Failed to clear deals")
+                showToast("Failed to clear deals", "error")
             }
         } catch (error) {
-            alert("Error connecting to server")
+            showToast("Error connecting to server", "error")
         } finally {
             setIsLoading(false)
         }
