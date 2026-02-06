@@ -173,7 +173,7 @@ export default function DealCard({
                                 </div>
 
                                 <a
-                                    href={url}
+                                    href={`/go/${id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn-primary text-sm py-2"

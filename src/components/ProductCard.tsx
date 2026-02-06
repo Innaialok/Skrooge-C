@@ -147,7 +147,7 @@ export default function ProductCard({
                     </div>
 
                     <a
-                        href={url}
+                        href={`/go/${id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl text-white transition-all hover:scale-105 shrink-0"
