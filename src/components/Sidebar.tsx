@@ -112,9 +112,9 @@ export default function Sidebar() {
     const SidebarContent = () => (
         <>
             {/* Logo - Fixed height to match SearchBar header */}
-            <div className="h-20 px-4 border-b border-[var(--border-color)] flex items-center justify-between shrink-0">
+            <div className="h-[88px] px-4 border-b border-[var(--border-color)] flex items-center justify-between shrink-0">
                 <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                    <div className="relative h-14 w-full max-w-[200px]">
+                    <div className="relative h-16 w-full max-w-[200px]">
                         <img
                             src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
                             alt="Skrooge"

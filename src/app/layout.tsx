@@ -43,8 +43,8 @@ export default function RootLayout({
             <Sidebar />
             {/* Mobile: add top padding for fixed header. Desktop: add left margin for sidebar */}
             <main className="pt-16 lg:pt-0 lg:ml-64 min-h-screen transition-all duration-300">
-              {/* Global Search Bar */}
-              <div className="sticky top-16 lg:top-0 z-30 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-4 sm:px-6 py-3 sm:py-4">
+              {/* Global Search Bar - Fixed height to match sidebar */}
+              <div className="sticky top-16 lg:top-0 z-30 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-4 sm:px-6 h-[88px] flex items-center">
                 <SearchBar />
               </div>
               {children}

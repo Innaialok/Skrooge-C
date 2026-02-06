@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MessageCircle, Send, ThumbsUp, Reply } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 interface Comment {
     id: string
@@ -45,6 +46,7 @@ const mockComments: Comment[] = [
 ]
 
 export default function DiscussionBoard({ productId }: { productId: string }) {
+    const { data: session, status } = useSession()
     const [comments, setComments] = useState<Comment[]>(mockComments)
     const [newComment, setNewComment] = useState('')
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
@@ -179,22 +181,33 @@ export default function DiscussionBoard({ productId }: { productId: string }) {
 
             {/* Comment Form */}
             <div className="mb-6">
-                <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Share your thoughts about this product..."
-                    className="input min-h-[100px] resize-none"
-                />
-                <div className="flex justify-end mt-3">
-                    <button
-                        onClick={handleSubmitComment}
-                        disabled={!newComment.trim()}
-                        className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Post Comment
-                        <Send className="w-4 h-4" />
-                    </button>
-                </div>
+                {status === 'authenticated' ? (
+                    <>
+                        <textarea
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Share your thoughts about this product..."
+                            className="input min-h-[100px] resize-none"
+                        />
+                        <div className="flex justify-end mt-3">
+                            <button
+                                onClick={handleSubmitComment}
+                                disabled={!newComment.trim()}
+                                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Post Comment
+                                <Send className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <div className="bg-[var(--bg-tertiary)] rounded-xl p-6 text-center">
+                        <p className="text-[var(--text-secondary)] mb-3">Sign in to join the discussion</p>
+                        <a href="/login" className="btn-primary inline-flex">
+                            Sign In / Sign Up
+                        </a>
+                    </div>
+                )}
             </div>
 
             {/* Comments List */}
