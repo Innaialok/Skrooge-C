@@ -3,7 +3,7 @@
  * Parses the OzBargain RSS feed to extract deals
  */
 
-import { BaseScraper, RawDeal, ScraperResult, scraperLog, parsePrice } from '../index';
+import { BaseScraper, RawDeal, ScraperResult, scraperLog, parsePrice, detectDealType } from '../index';
 
 const OZBARGAIN_RSS_URL = 'https://www.ozbargain.com.au/deals/feed';
 
@@ -174,6 +174,7 @@ export class OzBargainScraper extends BaseScraper {
             retailerName,
             source: 'ozbargain',
             externalId: this.extractDealId(item.link),
+            dealType: detectDealType(item.title, retailerName),
         };
     }
 

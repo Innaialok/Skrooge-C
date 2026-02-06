@@ -163,6 +163,7 @@ model Deal {
   isExpired     Boolean   @default(false)
   expiresAt     DateTime?
   source        String?   // manual, api, scrape
+  dealType      String    @default("product") // product, cashback, travel, service
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

@@ -16,6 +16,14 @@ interface ProductCardProps {
     productSlug: string
     productId?: string  // For favorites - product ID separate from deal ID
     url: string
+    dealType?: string  // product, cashback, travel, service
+}
+
+// Deal type badge configurations
+const dealTypeBadges: Record<string, { label: string; bg: string; icon: string }> = {
+    cashback: { label: 'Cashback', bg: 'linear-gradient(135deg, #9333ea, #7c3aed)', icon: '💰' },
+    travel: { label: 'Travel', bg: 'linear-gradient(135deg, #0ea5e9, #0369a1)', icon: '✈️' },
+    service: { label: 'Service', bg: 'linear-gradient(135deg, #f59e0b, #d97706)', icon: '📋' },
 }
 
 export default function ProductCard({
@@ -30,7 +38,9 @@ export default function ProductCard({
     productSlug,
     productId,
     url,
+    dealType = 'product',
 }: ProductCardProps) {
+    const badge = dealTypeBadges[dealType];
     return (
         <div className="group rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden hover:border-[var(--accent)] transition-all duration-300"
             style={{
@@ -71,6 +81,17 @@ export default function ProductCard({
                             boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
                         }}>
                         {Math.round(discount)}% OFF
+                    </div>
+                )}
+
+                {/* Deal Type Badge */}
+                {badge && (
+                    <div className="absolute top-10 sm:top-12 left-0 text-white px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-r-lg"
+                        style={{
+                            background: badge.bg,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                        }}>
+                        {badge.icon} {badge.label}
                     </div>
                 )}
 

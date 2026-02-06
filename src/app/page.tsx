@@ -87,6 +87,7 @@ export default async function Home() {
                   retailerLogo={deal.retailer.logoUrl}
                   productSlug={deal.product.slug}
                   url={deal.affiliateUrl || deal.url}
+                  dealType={deal.dealType}
                 />
               ))}
             </div>
@@ -130,6 +131,7 @@ export default async function Home() {
                 retailerLogo={deal.retailer.logoUrl}
                 productSlug={deal.product.slug}
                 url={deal.affiliateUrl || deal.url}
+                dealType={deal.dealType}
               />
             ))}
           </div>

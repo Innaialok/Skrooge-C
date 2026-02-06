@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '../prisma';
-import { RawDeal, generateSlug, scraperLog } from './index';
+import { RawDeal, generateSlug, scraperLog, normalizeTitle } from './index';
 
 interface ProcessResult {
     created: number;
@@ -102,7 +102,7 @@ async function processSingleDeal(rawDeal: RawDeal, result: ProcessResult): Promi
         data: {
             productId: product.id,
             retailerId: retailer.id,
-            title: rawDeal.title.substring(0, 255),
+            title: normalizeTitle(rawDeal.title).substring(0, 255),
             description: rawDeal.description,
             price: rawDeal.price,
             originalPrice: rawDeal.originalPrice,
@@ -110,6 +110,7 @@ async function processSingleDeal(rawDeal: RawDeal, result: ProcessResult): Promi
             url: rawDeal.url,
             imageUrl: rawDeal.imageUrl,
             source: rawDeal.source,
+            dealType: rawDeal.dealType || 'product',
             voteScore: 0,
             isHot: (rawDeal.discount || 0) >= 30, // Mark as hot if 30%+ discount
         },

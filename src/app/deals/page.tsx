@@ -69,6 +69,7 @@ export default async function DealsPage() {
                             retailerLogo={deal.retailer.logoUrl}
                             productSlug={deal.product.slug}
                             url={deal.affiliateUrl || deal.url}
+                            dealType={deal.dealType}
                         />
                     ))}
                 </div>

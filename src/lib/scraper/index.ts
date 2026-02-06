@@ -14,6 +14,7 @@ export interface RawDeal {
     retailerName: string;
     source: string;
     externalId?: string;
+    dealType?: string; // product, cashback, travel, service
 }
 
 export interface ScraperResult {
@@ -171,3 +172,69 @@ export function generateSlug(title: string): string {
         .replace(/-+/g, '-')
         .substring(0, 100);
 }
+
+/**
+ * Detect deal type based on title/retailer
+ */
+export function detectDealType(title: string, retailerName: string): string {
+    const lowerTitle = title.toLowerCase();
+    const lowerRetailer = retailerName.toLowerCase();
+
+    // Cashback deals
+    if (lowerTitle.includes('cashback') ||
+        lowerTitle.includes('% back') ||
+        lowerRetailer.includes('shopback') ||
+        lowerRetailer.includes('cashrewards')) {
+        return 'cashback';
+    }
+
+    // Travel deals
+    if (lowerTitle.includes('flight') ||
+        lowerTitle.includes('airline') ||
+        lowerTitle.includes('hotel') ||
+        lowerTitle.includes('qantas') ||
+        lowerTitle.includes('virgin australia') ||
+        lowerTitle.includes('jetstar') ||
+        lowerRetailer.includes('flightfinder') ||
+        lowerRetailer.includes('expedia')) {
+        return 'travel';
+    }
+
+    // Service deals (banks, subscriptions)
+    if (lowerTitle.includes('open a') ||
+        lowerTitle.includes('sign up') ||
+        lowerTitle.includes('subscription') ||
+        lowerRetailer.includes('bank')) {
+        return 'service';
+    }
+
+    return 'product';
+}
+
+/**
+ * Normalize deal title for cleaner display
+ */
+export function normalizeTitle(title: string): string {
+    let normalized = title
+        // Remove price mentions like $99, $99.99
+        .replace(/\$\d+(?:\.\d{2})?/g, '')
+        // Remove "@ Retailer" suffix
+        .replace(/@\s*[^@]+$/g, '')
+        // Remove "was $XX" mentions
+        .replace(/was\s*\$\d+(?:\.\d{2})?/gi, '')
+        // Remove "Delivered" as it's implied
+        .replace(/\s+delivered$/i, '')
+        // Remove delivery mentions
+        .replace(/\+\s*delivery\s*\([^)]*\)/gi, '')
+        // Clean up multiple spaces
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // Truncate if too long (max 100 chars)
+    if (normalized.length > 100) {
+        normalized = normalized.substring(0, 97) + '...';
+    }
+
+    return normalized;
+}
+
