@@ -27,6 +27,24 @@ const dealTypeBadges: Record<string, { label: string; bg: string; icon: string }
     travel: { label: 'Travel', bg: 'linear-gradient(135deg, #0ea5e9, #0369a1)', icon: '✈️' },
 }
 
+// Deal type card gradient configurations
+const dealTypeCardGradients: Record<string, string> = {
+    product: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(234, 179, 8, 0.15))',     // Cyan → Yellow
+    store: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.15))',     // Purple → Pink
+    cashback: 'linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(239, 68, 68, 0.15))',        // Black → Red
+    coupon: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.15))',     // Red → Orange
+    travel: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(6, 182, 212, 0.15))',     // Blue → Cyan
+}
+
+// Deal type border colors for hover
+const dealTypeBorderColors: Record<string, string> = {
+    product: '#06b6d4',   // Cyan
+    store: '#a855f7',     // Purple
+    cashback: '#ef4444',  // Red
+    coupon: '#f97316',    // Orange
+    travel: '#0ea5e9',    // Sky blue
+}
+
 export default function ProductCard({
     id,
     title,
@@ -42,19 +60,24 @@ export default function ProductCard({
     dealType = 'product',
 }: ProductCardProps) {
     const badge = dealTypeBadges[dealType];
+    const cardGradient = dealTypeCardGradients[dealType] || dealTypeCardGradients['product'];
+    const borderColor = dealTypeBorderColors[dealType] || dealTypeBorderColors['product'];
+
     return (
-        <div className="group rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden hover:border-[var(--accent)] transition-all duration-300"
+        <div className="group rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden transition-all duration-300"
             style={{
-                background: 'var(--card-bg)',
+                background: cardGradient,
                 boxShadow: 'var(--shadow-card)',
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'
                 e.currentTarget.style.transform = 'translateY(-4px)'
+                e.currentTarget.style.borderColor = borderColor
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'var(--shadow-card)'
                 e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.borderColor = 'var(--border-color)'
             }}
         >
             {/* Image Container with Discount Badge */}
