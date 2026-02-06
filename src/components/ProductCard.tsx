@@ -67,7 +67,7 @@ export default function ProductCard({
     const borderColor = dealTypeBorderColors[dealType] || dealTypeBorderColors['product'];
 
     return (
-        <div className="group rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden transition-all duration-300"
+        <div className="group flex flex-row sm:flex-col rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden transition-all duration-300 h-32 sm:h-auto"
             style={{
                 background: cardGradient,
                 boxShadow: 'var(--shadow-card)',
@@ -84,9 +84,9 @@ export default function ProductCard({
             }}
         >
             {/* Image Container with Discount Badge */}
-            <div className="relative aspect-square overflow-hidden"
+            <div className="relative w-32 sm:w-full shrink-0 sm:aspect-square overflow-hidden"
                 style={{ background: 'var(--bg-tertiary)' }}>
-                <Link href={`/product/${productSlug}`}>
+                <Link href={`/product/${productSlug}`} className="block h-full">
                     {imageUrl ? (
                         <img
                             src={imageUrl}
@@ -100,9 +100,9 @@ export default function ProductCard({
                     )}
                 </Link>
 
-                {/* Discount Banner */}
+                {/* Discount Banner - Adjusted for mobile */}
                 {discount && discount > 0 && (
-                    <div className="absolute top-2 sm:top-3 left-0 text-white px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm font-bold rounded-r-lg"
+                    <div className="absolute top-2 left-0 text-white px-2 py-0.5 text-[10px] sm:text-sm font-bold rounded-r-lg z-10"
                         style={{
                             background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                             boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
@@ -113,7 +113,7 @@ export default function ProductCard({
 
                 {/* Deal Type Badge */}
                 {badge && (
-                    <div className="absolute top-10 sm:top-12 left-0 text-white px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-r-lg"
+                    <div className="absolute top-8 sm:top-12 left-0 text-white px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-r-lg z-10"
                         style={{
                             background: badge.bg,
                             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
@@ -122,57 +122,59 @@ export default function ProductCard({
                     </div>
                 )}
 
-                {/* Favorite Button - top right */}
-                <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+                {/* Favorite Button - Adjusted positioning */}
+                <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10">
                     <FavoriteButton productId={productId || id} size="sm" />
                 </div>
 
                 {retailerLogo && (
-                    <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 rounded-lg sm:rounded-xl p-1 sm:p-1.5 border border-[var(--border-color)]"
+                    <div className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 rounded-lg sm:rounded-xl p-1 sm:p-1.5 border border-[var(--border-color)] z-10 hidden sm:block"
                         style={{
                             background: 'var(--card-bg)',
                             boxShadow: 'var(--shadow-md)'
                         }}>
-                        {retailerLogo && (
-                            <img src={retailerLogo} alt={retailerName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
-                        )}
+                        <img src={retailerLogo} alt={retailerName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
                     </div>
                 )}
             </div>
 
             {/* Content */}
-            <div className="p-2.5 sm:p-4">
-                {/* Retailer Name */}
-                <p className="text-[10px] sm:text-xs font-medium text-[var(--accent)] mb-0.5 sm:mb-1">{retailerName}</p>
+            <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0">
+                <div>
+                    {/* Retailer Name & Logo (Mobile Only) */}
+                    <div className="flex items-center justify-between mb-1">
+                        <p className="text-[10px] sm:text-xs font-medium text-[var(--accent)] truncate pr-2">{retailerName}</p>
+                        {retailerLogo && (
+                            <div className="sm:hidden w-5 h-5 rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] p-0.5 shrink-0">
+                                <img src={retailerLogo} alt={retailerName} className="w-full h-full object-contain" />
+                            </div>
+                        )}
+                    </div>
 
-                {/* Title */}
-                <Link href={`/product/${productSlug}`}>
-                    <h3 className="text-xs sm:text-base font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-[var(--accent)] transition-colors min-h-[32px] sm:min-h-[48px]">
-                        {title}
-                    </h3>
-                </Link>
+                    {/* Title */}
+                    <Link href={`/product/${productSlug}`}>
+                        <h3 className="text-xs sm:text-base font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-[var(--accent)] transition-colors mb-1 sm:min-h-[48px]">
+                            {title}
+                        </h3>
+                    </Link>
+                </div>
 
                 {/* Pricing */}
-                <div className="mt-2 sm:mt-3 flex items-end justify-between gap-1">
+                <div className="flex items-end justify-between gap-2 mt-auto">
                     <div className="min-w-0">
-                        <div className="flex items-baseline gap-1 sm:gap-2 flex-wrap">
-                            <span className="text-base sm:text-2xl font-bold price-main">${price.toFixed(2)}</span>
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-sm sm:text-2xl font-bold price-main">${price.toFixed(2)}</span>
                             {originalPrice && originalPrice > price && (
                                 <span className="text-[10px] sm:text-sm text-[var(--text-muted)] line-through">${originalPrice.toFixed(2)}</span>
                             )}
                         </div>
-                        {originalPrice && originalPrice > price && (
-                            <p className="text-[10px] sm:text-sm text-[var(--accent)] font-medium hidden sm:block">
-                                Save ${(originalPrice - price).toFixed(2)}
-                            </p>
-                        )}
                     </div>
 
                     <a
                         href={`/go/${id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl text-white transition-all hover:scale-105 shrink-0"
+                        className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl text-white transition-all hover:scale-105 shrink-0 bg-[var(--accent)]"
                         style={{
                             background: 'var(--cta-bg)',
                             boxShadow: '0 4px 14px 0 var(--cta-shadow)'
