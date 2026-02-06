@@ -114,16 +114,11 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
                 <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                    <div className="relative h-12 w-40">
+                    <div className="relative h-14 w-48">
                         <img
-                            src="/logo.png"
+                            src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
                             alt="Skrooge"
-                            className="h-12 w-full object-contain dark:hidden"
-                        />
-                        <img
-                            src="/logo-white.png"
-                            alt="Skrooge"
-                            className="h-12 w-full object-contain hidden dark:block"
+                            className="h-14 w-full object-contain"
                         />
                     </div>
                 </Link>
@@ -334,16 +329,11 @@ export default function Sidebar() {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-50">
                 <Link href="/" className="flex items-center">
-                    <div className="relative h-10 w-32">
+                    <div className="relative h-11 w-36">
                         <img
-                            src="/logo.png"
+                            src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
                             alt="Skrooge"
-                            className="h-10 w-full object-contain dark:hidden"
-                        />
-                        <img
-                            src="/logo-white.png"
-                            alt="Skrooge"
-                            className="h-10 w-full object-contain hidden dark:block"
+                            className="h-11 w-full object-contain"
                         />
                     </div>
                 </Link>
