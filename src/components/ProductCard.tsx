@@ -168,8 +168,8 @@ export default function ProductCard({
             <div className="flex-1 p-3 md:p-4 flex flex-col justify-between min-w-0">
                 <div>
                     {/* Retailer & Meta */}
-                    <div className="flex items-center justify-between mb-1 md:mb-2">
-                        <p className="text-[10px] md:text-xs font-medium text-[var(--accent)] truncate pr-2">{retailerName}</p>
+                    <div className="flex items-center justify-between mb-1 md:mb-2 text-[10px] md:text-xs font-medium text-[var(--accent)]">
+                        <span className="truncate pr-2">{retailerName}</span>
                         {retailerLogo && (
                             <div className="md:hidden w-5 h-5 rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] p-0.5 shrink-0">
                                 <img src={retailerLogo} alt={retailerName} className="w-full h-full object-contain" />
@@ -179,62 +179,61 @@ export default function ProductCard({
 
                     {/* Title */}
                     <Link href={`/product/${productSlug}`}>
-                        <h3 className="text-xs sm:text-base font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-[var(--accent)] transition-colors mb-1 sm:min-h-[48px]">
+                        <h3 className="text-xs sm:text-base font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-[var(--accent)] transition-colors mb-2">
                             {title}
                         </h3>
                     </Link>
                 </div>
 
-            </div>
-
-            {/* Footer Actions: Pricing & Voting */}
-            <div className="flex items-end justify-between gap-2 mt-auto">
-                <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline gap-1.5 flex-wrap">
-                        <span className="text-sm sm:text-2xl font-bold price-main">${price.toFixed(2)}</span>
-                        {originalPrice && originalPrice > price && (
-                            <span className="text-[10px] sm:text-sm text-[var(--text-muted)] line-through">${originalPrice.toFixed(2)}</span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Voting & Action */}
-                <div className="flex items-center gap-2">
-                    {/* Voting Buttons */}
-                    <div className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-1 border border-[var(--border-color)]">
-                        <button
-                            onClick={(e) => handleVote(e, 1)}
-                            className={`p-1 rounded transition-colors ${userVote === 1 ? 'text-green-500 bg-green-500/10' : 'hover:text-green-500 hover:bg-green-50/10'}`}
-                            title="Good deal"
-                        >
-                            <span className="sr-only">Upvote</span>
-                            <ThumbsUp className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === 1 ? 'fill-current' : ''}`} />
-                        </button>
-                        <span className={`text-[10px] sm:text-xs font-medium ${userVote === 1 ? 'text-green-500' : userVote === -1 ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
-                            {votes > 0 ? `+${votes}` : votes}
-                        </span>
-                        <button
-                            onClick={(e) => handleVote(e, -1)}
-                            className={`p-1 rounded transition-colors ${userVote === -1 ? 'text-red-500 bg-red-500/10' : 'hover:text-red-500 hover:bg-red-50/10'}`}
-                            title="Bad deal"
-                        >
-                            <span className="sr-only">Downvote</span>
-                            <ThumbsDown className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === -1 ? 'fill-current' : ''}`} />
-                        </button>
+                {/* Footer Actions: Pricing & Voting */}
+                <div className="flex items-end justify-between gap-2 mt-2 pt-2 border-t border-[var(--border-color)]/20 md:border-t-0 md:pt-0">
+                    <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-sm sm:text-xl md:text-2xl font-bold price-main">${price.toFixed(2)}</span>
+                            {originalPrice && originalPrice > price && (
+                                <span className="text-[10px] sm:text-xs text-[var(--text-muted)] line-through">${originalPrice.toFixed(2)}</span>
+                            )}
+                        </div>
                     </div>
 
-                    <a
-                        href={`/go/${id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl text-white transition-all hover:scale-105 shrink-0 bg-[var(--accent)]"
-                        style={{
-                            background: 'var(--cta-bg)',
-                            boxShadow: '0 4px 14px 0 var(--cta-shadow)'
-                        }}
-                    >
-                        <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </a>
+                    {/* Voting & Action */}
+                    <div className="flex items-center gap-2">
+                        {/* Voting Buttons */}
+                        <div className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-1 border border-[var(--border-color)]">
+                            <button
+                                onClick={(e) => handleVote(e, 1)}
+                                className={`p-1 rounded transition-colors ${userVote === 1 ? 'text-green-500 bg-green-500/10' : 'hover:text-green-500 hover:bg-green-50/10'}`}
+                                title="Good deal"
+                            >
+                                <span className="sr-only">Upvote</span>
+                                <ThumbsUp className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === 1 ? 'fill-current' : ''}`} />
+                            </button>
+                            <span className={`text-[10px] sm:text-xs font-medium ${userVote === 1 ? 'text-green-500' : userVote === -1 ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
+                                {votes > 0 ? `+${votes}` : votes}
+                            </span>
+                            <button
+                                onClick={(e) => handleVote(e, -1)}
+                                className={`p-1 rounded transition-colors ${userVote === -1 ? 'text-red-500 bg-red-500/10' : 'hover:text-red-500 hover:bg-red-50/10'}`}
+                                title="Bad deal"
+                            >
+                                <span className="sr-only">Downvote</span>
+                                <ThumbsDown className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === -1 ? 'fill-current' : ''}`} />
+                            </button>
+                        </div>
+
+                        <a
+                            href={`/go/${id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl text-white transition-all hover:scale-105 shrink-0 bg-[var(--accent)]"
+                            style={{
+                                background: 'var(--cta-bg)',
+                                boxShadow: '0 4px 14px 0 var(--cta-shadow)'
+                            }}
+                        >
+                            <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
