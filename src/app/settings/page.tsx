@@ -4,7 +4,6 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { User, Moon, Sun, Bell, Shield, LogOut, ChevronRight, Mail, Trash2 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
-import { toast } from 'sonner'
 import Link from 'next/link'
 
 export default function SettingsPage() {
@@ -107,7 +106,7 @@ export default function SettingsPage() {
                             icon={Bell}
                             label="Notifications"
                             value="Push notifications enabled"
-                            onClick={() => toast.info("Notification settings coming soon!")}
+                            onClick={() => alert("Notification settings coming soon!")}
                         />
                     </Section>
 
@@ -128,7 +127,7 @@ export default function SettingsPage() {
                         <button
                             onClick={() => {
                                 if (confirm('Are you sure? This cannot be undone.')) {
-                                    toast.error('Account deletion not implemented in demo')
+                                    alert('Account deletion not implemented in demo')
                                 }
                             }}
                             className="w-full p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-red-500 font-medium flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"

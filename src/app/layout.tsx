@@ -4,7 +4,6 @@ import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AuthProvider from "@/components/AuthProvider";
-import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Skrooge - Australia's Best Deal Aggregator",
@@ -49,7 +48,6 @@ export default function RootLayout({
                 <SearchBar />
               </div>
               {children}
-              <Toaster richColors position="bottom-right" /> {/* Added this line */}
             </main>
           </ThemeProvider>
         </AuthProvider>

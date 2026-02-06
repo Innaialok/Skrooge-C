@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Shield, RefreshCw, Trash2, Database, AlertTriangle, CheckCircle, Activity } from 'lucide-react'
-import { toast } from 'sonner'
 
 export default function AdminPage() {
     const { data: session, status } = useSession()
@@ -25,7 +24,7 @@ export default function AdminPage() {
 
     const handleScrape = async () => {
         setIsLoading(true)
-        const toastId = toast.loading("Scraping started... this may take a while")
+        // const toastId = toast.loading("Scraping started... this may take a while")
 
         try {
             const res = await fetch('/api/admin/scrape', {
@@ -35,12 +34,12 @@ export default function AdminPage() {
 
             if (res.ok) {
                 const data = await res.json()
-                toast.success(`Scrape complete! Found ${data.count || 'new'} deals`, { id: toastId })
+                alert(`Scrape complete! Found ${data.count || 'new'} deals`)
             } else {
                 throw new Error('Scrape failed')
             }
         } catch (error) {
-            toast.error("Scraping failed to start", { id: toastId })
+            alert("Scraping failed to start")
         } finally {
             setIsLoading(false)
         }
@@ -53,12 +52,12 @@ export default function AdminPage() {
         try {
             const res = await fetch('/api/admin/clear-deals', { method: 'POST' })
             if (res.ok) {
-                toast.success("Expired deals cleared")
+                alert("Expired deals cleared")
             } else {
-                toast.error("Failed to clear deals")
+                alert("Failed to clear deals")
             }
         } catch (error) {
-            toast.error("Error connecting to server")
+            alert("Error connecting to server")
         } finally {
             setIsLoading(false)
         }
