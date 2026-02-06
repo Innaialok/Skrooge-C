@@ -114,11 +114,11 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
                 <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                    <div className="relative h-14 w-48">
+                    <div className="relative h-16 w-56">
                         <img
                             src={theme === 'dark' ? '/logo-white.png' : '/logo.png'}
                             alt="Skrooge"
-                            className="h-14 w-full object-contain"
+                            className="h-16 w-full object-contain"
                         />
                     </div>
                 </Link>
