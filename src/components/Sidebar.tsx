@@ -112,13 +112,12 @@ export default function Sidebar() {
         <>
             {/* Logo */}
             <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
+                <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
                     <img
                         src="/logo.png"
                         alt="Skrooge"
-                        className="w-10 h-10 rounded-xl shadow-lg shadow-emerald-500/20 shrink-0 object-contain"
+                        className="h-10 shrink-0 object-contain dark:brightness-0 dark:invert"
                     />
-                    <span className="text-xl font-bold text-[var(--text-primary)]">Skrooge</span>
                 </Link>
                 {/* Mobile close button */}
                 <button
@@ -367,13 +366,12 @@ export default function Sidebar() {
         <>
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-50">
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center">
                     <img
                         src="/logo.png"
                         alt="Skrooge"
-                        className="w-9 h-9 rounded-xl shadow-lg shadow-emerald-500/20 object-contain"
+                        className="h-9 shrink-0 object-contain dark:brightness-0 dark:invert"
                     />
-                    <span className="text-lg font-bold text-[var(--text-primary)]">Skrooge</span>
                 </Link>
                 <button
                     onClick={() => setMobileOpen(true)}

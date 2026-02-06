@@ -5,7 +5,8 @@
 
 import { BaseScraper, RawDeal, ScraperResult, scraperLog, parsePrice, detectDealType } from '../index';
 
-const OZBARGAIN_RSS_URL = 'https://www.ozbargain.com.au/deals/feed';
+// Base RSS URL - can append ?page=X for pagination
+const OZBARGAIN_RSS_BASE = 'https://www.ozbargain.com.au/deals/feed';
 
 interface RSSItem {
     title: string;
@@ -30,17 +31,44 @@ export class OzBargainScraper extends BaseScraper {
         };
 
         try {
-            scraperLog.info(this.getSourceName(), 'Starting RSS feed fetch...');
+            scraperLog.info(this.getSourceName(), 'Starting RSS feed fetch from multiple pages...');
 
-            const response = await this.fetchWithRetry(OZBARGAIN_RSS_URL);
-            const xmlText = await response.text();
+            // Fetch from multiple pages to get more deals (5 pages = ~150 deals)
+            const pagesToFetch = 5;
+            const allItems: RSSItem[] = [];
+            const seenUrls = new Set<string>();
 
-            scraperLog.info(this.getSourceName(), 'Parsing RSS feed...');
-            const items = this.parseRSS(xmlText);
+            for (let page = 0; page < pagesToFetch; page++) {
+                try {
+                    const url = page === 0 ? OZBARGAIN_RSS_BASE : `${OZBARGAIN_RSS_BASE}?page=${page}`;
+                    scraperLog.info(this.getSourceName(), `Fetching page ${page + 1}...`);
 
-            scraperLog.info(this.getSourceName(), `Found ${items.length} items in feed`);
+                    const response = await this.fetchWithRetry(url);
+                    const xmlText = await response.text();
+                    const items = this.parseRSS(xmlText);
 
-            for (const item of items) {
+                    // Deduplicate by URL
+                    for (const item of items) {
+                        if (!seenUrls.has(item.link)) {
+                            seenUrls.add(item.link);
+                            allItems.push(item);
+                        }
+                    }
+
+                    scraperLog.info(this.getSourceName(), `Page ${page + 1}: Found ${items.length} items (total unique: ${allItems.length})`);
+
+                    // Small delay between pages to be nice
+                    if (page < pagesToFetch - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                } catch (pageError) {
+                    scraperLog.error(this.getSourceName(), `Failed to fetch page ${page + 1}`, pageError);
+                }
+            }
+
+            scraperLog.info(this.getSourceName(), `Total unique items: ${allItems.length}`);
+
+            for (const item of allItems) {
                 try {
                     const deal = this.parseItem(item);
                     if (deal) {
