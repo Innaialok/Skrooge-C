@@ -1,3 +1,6 @@
+// Force dynamic rendering to show fresh data
+export const dynamic = 'force-dynamic'
+
 import { Flame, Clock } from 'lucide-react'
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'

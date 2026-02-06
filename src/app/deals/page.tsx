@@ -1,3 +1,6 @@
+// Force dynamic rendering to show fresh data
+export const dynamic = 'force-dynamic'
+
 import { Flame, Filter, Search } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import prisma from '@/lib/prisma'
