@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Authentication Models (NextAuth.js)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  username      String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  comments      Comment[]
+  votes         Vote[]
+  favorites     Favorite[]
+  priceAlerts   PriceAlert[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// Core Business Models
+// ============================================
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  icon        String?
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  parent      Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryChildren")
+  products    Product[]
+}
+
+model Retailer {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  slug         String   @unique
+  logoUrl      String?
+  baseUrl      String
+  affiliateId  String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  deals        Deal[]
+  priceHistory PriceHistory[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  imageUrl    String?
+  brand       String?
+  model       String?
+  barcode     String?  @unique
+  categoryId  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  deals        Deal[]
+  priceHistory PriceHistory[]
+  specs        ProductSpec[]
+  comments     Comment[]
+  favorites    Favorite[]
+  priceAlerts  PriceAlert[]
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model ProductSpec {
+  id        String   @id @default(cuid())
+  productId String
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, key])
+}
+
+model Deal {
+  id            String    @id @default(cuid())
+  productId     String
+  retailerId    String
+  title         String
+  description   String?
+  price         Float
+  originalPrice Float?
+  discount      Float?    // Percentage discount
+  url           String
+  affiliateUrl  String?
+  imageUrl      String?
+  voteScore     Int       @default(0)
+  isHot         Boolean   @default(false)
+  isFeatured    Boolean   @default(false)
+  isExpired     Boolean   @default(false)
+  expiresAt     DateTime?
+  source        String?   // manual, api, scrape
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailer Retailer @relation(fields: [retailerId], references: [id])
+  votes    Vote[]
+  comments Comment[]
+
+  @@index([productId])
+  @@index([retailerId])
+  @@index([isHot])
+  @@index([createdAt])
+}
+
+model PriceHistory {
+  id         String   @id @default(cuid())
+  productId  String
+  retailerId String
+  price      Float
+  recordedAt DateTime @default(now())
+
+  // Relations
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailer Retailer @relation(fields: [retailerId], references: [id])
+
+  @@index([productId, recordedAt])
+  @@index([retailerId])
+}
+
+// ============================================
+// User Interaction Models
+// ============================================
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  dealId    String
+  value     Int      // 1 for upvote, -1 for downvote
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dealId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  dealId    String?
+  productId String?
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deal     Deal?     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  product  Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+
+  @@index([dealId])
+  @@index([productId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model PriceAlert {
+  id          String   @id @default(cuid())
+  userId      String
+  productId   String
+  targetPrice Float
+  isActive    Boolean  @default(true)
+  triggeredAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}

@@ -1,0 +1,187 @@
+/**
+ * OzBargain RSS Feed Scraper
+ * Parses the OzBargain RSS feed to extract deals
+ */
+
+import { BaseScraper, RawDeal, ScraperResult, scraperLog, parsePrice } from '../index';
+
+const OZBARGAIN_RSS_URL = 'https://www.ozbargain.com.au/deals/feed';
+
+interface RSSItem {
+    title: string;
+    link: string;
+    description: string;
+    pubDate: string;
+    category?: string;
+}
+
+export class OzBargainScraper extends BaseScraper {
+    getSourceName(): string {
+        return 'ozbargain';
+    }
+
+    async scrape(): Promise<ScraperResult> {
+        const result: ScraperResult = {
+            success: false,
+            deals: [],
+            errors: [],
+            scrapedAt: new Date(),
+            source: this.getSourceName(),
+        };
+
+        try {
+            scraperLog.info(this.getSourceName(), 'Starting RSS feed fetch...');
+
+            const response = await this.fetchWithRetry(OZBARGAIN_RSS_URL);
+            const xmlText = await response.text();
+
+            scraperLog.info(this.getSourceName(), 'Parsing RSS feed...');
+            const items = this.parseRSS(xmlText);
+
+            scraperLog.info(this.getSourceName(), `Found ${items.length} items in feed`);
+
+            for (const item of items) {
+                try {
+                    const deal = this.parseItem(item);
+                    if (deal) {
+                        result.deals.push(deal);
+                    }
+                } catch (error) {
+                    const errorMsg = `Failed to parse item: ${item.title}`;
+                    scraperLog.error(this.getSourceName(), errorMsg, error);
+                    result.errors.push(errorMsg);
+                }
+            }
+
+            result.success = true;
+            scraperLog.info(this.getSourceName(), `Successfully parsed ${result.deals.length} deals`);
+
+        } catch (error) {
+            const errorMsg = `Failed to scrape OzBargain: ${error}`;
+            scraperLog.error(this.getSourceName(), errorMsg, error);
+            result.errors.push(errorMsg);
+        }
+
+        return result;
+    }
+
+    /**
+     * Parse RSS XML into items
+     */
+    private parseRSS(xmlText: string): RSSItem[] {
+        const items: RSSItem[] = [];
+
+        // Simple regex-based XML parsing (works for RSS feeds)
+        const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+        let match;
+
+        while ((match = itemRegex.exec(xmlText)) !== null) {
+            const itemXml = match[1];
+
+            const title = this.extractTag(itemXml, 'title');
+            const link = this.extractTag(itemXml, 'link');
+            const description = this.extractTag(itemXml, 'description');
+            const pubDate = this.extractTag(itemXml, 'pubDate');
+            const category = this.extractTag(itemXml, 'category');
+
+            if (title && link) {
+                items.push({
+                    title: this.decodeHtmlEntities(title),
+                    link,
+                    description: this.decodeHtmlEntities(description || ''),
+                    pubDate: pubDate || '',
+                    category: category || undefined,
+                });
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * Extract content from an XML tag
+     */
+    private extractTag(xml: string, tagName: string): string | null {
+        // Handle CDATA sections
+        const cdataRegex = new RegExp(`<${tagName}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tagName}>`, 'i');
+        const cdataMatch = xml.match(cdataRegex);
+        if (cdataMatch) {
+            return cdataMatch[1].trim();
+        }
+
+        // Handle regular tags
+        const regex = new RegExp(`<${tagName}>([\\s\\S]*?)</${tagName}>`, 'i');
+        const match = xml.match(regex);
+        return match ? match[1].trim() : null;
+    }
+
+    /**
+     * Decode HTML entities
+     */
+    private decodeHtmlEntities(text: string): string {
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&nbsp;/g, ' ');
+    }
+
+    /**
+     * Parse a single RSS item into a RawDeal
+     */
+    private parseItem(item: RSSItem): RawDeal | null {
+        // OzBargain titles often contain price like: "Product Name $99 @ Retailer"
+        const priceMatch = item.title.match(/\$(\d+(?:\.\d{2})?)/);
+        const price = priceMatch ? parsePrice(priceMatch[1]) : null;
+
+        // Extract retailer from title (usually after "@")
+        const retailerMatch = item.title.match(/@\s*(.+?)(?:\s*\(|$)/);
+        const retailerName = retailerMatch ? retailerMatch[1].trim() : 'Unknown';
+
+        // Extract image from description if available
+        const imageMatch = item.description.match(/<img[^>]+src=["']([^"']+)["']/i);
+        const imageUrl = imageMatch ? imageMatch[1] : undefined;
+
+        // Calculate original price if mentioned
+        let originalPrice: number | undefined;
+        let discount: number | undefined;
+
+        const wasMatch = item.title.match(/was\s*\$(\d+(?:\.\d{2})?)/i);
+        if (wasMatch && price) {
+            originalPrice = parsePrice(wasMatch[1]) || undefined;
+            if (originalPrice && originalPrice > price) {
+                discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+            }
+        }
+
+        // Clean description - remove HTML tags
+        const cleanDescription = item.description
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 500);
+
+        return {
+            title: item.title,
+            description: cleanDescription || undefined,
+            price: price || 0,
+            originalPrice,
+            discount,
+            url: item.link,
+            imageUrl,
+            retailerName,
+            source: 'ozbargain',
+            externalId: this.extractDealId(item.link),
+        };
+    }
+
+    /**
+     * Extract OzBargain deal ID from URL
+     */
+    private extractDealId(url: string): string {
+        const match = url.match(/\/node\/(\d+)/);
+        return match ? `ozbargain-${match[1]}` : `ozbargain-${Date.now()}`;
+    }
+}
