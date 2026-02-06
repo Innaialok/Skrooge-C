@@ -149,7 +149,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                 <div className="flex flex-wrap gap-3">
                                     {product.deals[0] && (
                                         <a
-                                            href={product.deals[0].affiliateUrl || product.deals[0].url}
+                                            href={`/go/${product.deals[0].id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="btn-primary"
@@ -244,7 +244,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                             )}
                                         </div>
                                         <a
-                                            href={deal.affiliateUrl || deal.url}
+                                            href={`/go/${deal.id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="btn-ghost text-sm"
