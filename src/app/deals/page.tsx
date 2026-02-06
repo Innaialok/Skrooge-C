@@ -75,19 +75,7 @@ export default async function DealsPage({ searchParams }: PageProps) {
 
     return (
         <div className="min-h-screen">
-            {/* Search Header */}
-            <div className="sticky top-0 z-30 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-6 py-4">
-                <div className="flex items-center gap-4">
-                    <div className="relative flex-1 max-w-xl">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
-                        <input
-                            type="text"
-                            placeholder="Search deals..."
-                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                        />
-                    </div>
-                </div>
-            </div>
+
 
             <div className="p-6">
                 {/* Header with back button if filtered */}
