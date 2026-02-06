@@ -113,10 +113,11 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 
-                        flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
-                        <DollarSign className="w-6 h-6 text-white" />
-                    </div>
+                    <img
+                        src="/logo.png"
+                        alt="Skrooge"
+                        className="w-10 h-10 rounded-xl shadow-lg shadow-emerald-500/20 shrink-0 object-contain"
+                    />
                     <span className="text-xl font-bold text-[var(--text-primary)]">Skrooge</span>
                 </Link>
                 {/* Mobile close button */}
@@ -163,8 +164,8 @@ export default function Sidebar() {
                         <button
                             onClick={() => setProductDealsOpen(!productDealsOpen)}
                             className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${pathname.includes('/deals') && pathname.includes('type=product')
-                                    ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
+                                ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
                                 }`}
                         >
                             <span className="text-base w-5 text-center shrink-0">🛒</span>
@@ -367,10 +368,11 @@ export default function Sidebar() {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-50">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 
-                        flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <DollarSign className="w-5 h-5 text-white" />
-                    </div>
+                    <img
+                        src="/logo.png"
+                        alt="Skrooge"
+                        className="w-9 h-9 rounded-xl shadow-lg shadow-emerald-500/20 object-contain"
+                    />
                     <span className="text-lg font-bold text-[var(--text-primary)]">Skrooge</span>
                 </Link>
                 <button

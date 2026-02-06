@@ -14,7 +14,8 @@ export interface RawDeal {
     retailerName: string;
     source: string;
     externalId?: string;
-    dealType?: string; // product, cashback, travel, service
+    dealType?: string; // product, cashback, store, coupon, travel
+    category?: string; // electronics, computing, gaming, fashion, home-garden, sports
 }
 
 export interface ScraperResult {

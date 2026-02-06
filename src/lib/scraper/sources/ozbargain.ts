@@ -144,6 +144,12 @@ export class OzBargainScraper extends BaseScraper {
         const imageMatch = item.description.match(/<img[^>]+src=["']([^"']+)["']/i);
         const imageUrl = imageMatch ? imageMatch[1] : undefined;
 
+        // Extract actual retailer/deal URL from description
+        // OzBargain descriptions usually contain the actual link in an <a> tag
+        const retailerUrlMatch = item.description.match(/<a[^>]+href=["']([^"']+)["'][^>]*>.*?(?:Go to Deal|View Deal|Buy Now|Shop Now|Get Deal)/i);
+        const altUrlMatch = item.description.match(/<a[^>]+href=["'](https?:\/\/(?!www\.ozbargain)[^"']+)["']/i);
+        const retailerUrl = retailerUrlMatch?.[1] || altUrlMatch?.[1] || item.link;
+
         // Calculate original price if mentioned
         let originalPrice: number | undefined;
         let discount: number | undefined;
@@ -163,19 +169,69 @@ export class OzBargainScraper extends BaseScraper {
             .trim()
             .substring(0, 500);
 
+        // Detect category based on keywords in title
+        const category = this.detectCategory(item.title, retailerName);
+
         return {
             title: item.title,
             description: cleanDescription || undefined,
             price: price || 0,
             originalPrice,
             discount,
-            url: item.link,
+            url: retailerUrl,  // Use retailer URL instead of OzBargain link
             imageUrl,
             retailerName,
             source: 'ozbargain',
             externalId: this.extractDealId(item.link),
             dealType: detectDealType(item.title, retailerName),
+            category,  // Add detected category
         };
+    }
+
+    /**
+     * Detect product category based on keywords
+     */
+    private detectCategory(title: string, retailerName: string): string | undefined {
+        const lowerTitle = title.toLowerCase();
+        const lowerRetailer = retailerName.toLowerCase();
+
+        // Electronics
+        if (lowerTitle.match(/phone|iphone|samsung|pixel|earbuds|headphones|speaker|tv|television|monitor|tablet|ipad|watch|smartwatch|camera|gopro|drone/) ||
+            lowerRetailer.match(/jb hi-fi|harvey norman|bing lee|officeworks|apple/)) {
+            return 'electronics';
+        }
+
+        // Computing
+        if (lowerTitle.match(/laptop|computer|pc|macbook|keyboard|mouse|ssd|hard drive|ram|cpu|gpu|graphics card|nvidia|amd|intel|router|nas|server/) ||
+            lowerRetailer.match(/pccasegear|msy|scorptec|umart/)) {
+            return 'computing';
+        }
+
+        // Gaming
+        if (lowerTitle.match(/game|gaming|xbox|playstation|ps5|nintendo|switch|steam|controller|console/) ||
+            lowerRetailer.match(/eb games|gamestop/)) {
+            return 'gaming';
+        }
+
+        // Fashion
+        if (lowerTitle.match(/shirt|pants|jeans|dress|shoes|sneakers|boots|jacket|coat|clothing|fashion|wear|nike|adidas|puma/) ||
+            lowerRetailer.match(/uniqlo|asos|the iconic|cotton on|h&m|zara/)) {
+            return 'fashion';
+        }
+
+        // Home & Garden
+        if (lowerTitle.match(/furniture|sofa|bed|mattress|chair|table|desk|lamp|garden|outdoor|bbq|patio|lawn|plant|pot|tool/) ||
+            lowerRetailer.match(/ikea|bunnings|fantastic furniture|temple & webster|kmart|big w/)) {
+            return 'home-garden';
+        }
+
+        // Sports
+        if (lowerTitle.match(/sport|fitness|gym|bike|bicycle|running|yoga|exercise|weight|protein|golf|tennis|football|soccer/) ||
+            lowerRetailer.match(/rebel sport|decathlon|bcf|anaconda/)) {
+            return 'sports';
+        }
+
+        return undefined;
     }
 
     /**
@@ -186,3 +242,4 @@ export class OzBargainScraper extends BaseScraper {
         return match ? `ozbargain-${match[1]}` : `ozbargain-${Date.now()}`;
     }
 }
+
