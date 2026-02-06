@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Share2, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
 import FavoriteButton from './FavoriteButton'
@@ -65,6 +66,33 @@ export default function ProductCard({
     const badge = dealTypeBadges[dealType];
     const cardGradient = dealTypeCardGradients[dealType] || dealTypeCardGradients['product'];
     const borderColor = dealTypeBorderColors[dealType] || dealTypeBorderColors['product'];
+
+    const [votes, setVotes] = useState(0)
+    const [userVote, setUserVote] = useState<1 | -1 | null>(null)
+
+    const handleVote = (e: React.MouseEvent, value: 1 | -1) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        // Mock auth check - assuming true for demo as requested
+        const isAuthenticated = true
+        if (!isAuthenticated) {
+            alert("Please sign in to vote")
+            return
+        }
+
+        if (userVote === value) {
+            // Remove vote
+            setUserVote(null)
+            setVotes(v => v - value)
+        } else {
+            // Change/Add vote
+            // If changing from -1 to 1 (or vice versa), the difference is 2. If from null to 1, diff is 1.
+            const diff = userVote ? 2 * value : value
+            setVotes(v => v + diff)
+            setUserVote(value)
+        }
+    }
 
     return (
         <div className="group flex flex-row md:flex-col rounded-xl sm:rounded-2xl border border-[var(--border-color)] overflow-hidden transition-all duration-300 h-32 md:h-auto"
@@ -172,14 +200,24 @@ export default function ProductCard({
                 <div className="flex items-center gap-2">
                     {/* Voting Buttons */}
                     <div className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-1 border border-[var(--border-color)]">
-                        <button className="p-1 hover:text-green-500 hover:bg-green-50/10 rounded transition-colors" title="Good deal">
+                        <button
+                            onClick={(e) => handleVote(e, 1)}
+                            className={`p-1 rounded transition-colors ${userVote === 1 ? 'text-green-500 bg-green-500/10' : 'hover:text-green-500 hover:bg-green-50/10'}`}
+                            title="Good deal"
+                        >
                             <span className="sr-only">Upvote</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 sm:w-4 sm:h-4"><path d="M7 10v12" /><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" /></svg>
+                            <ThumbsUp className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === 1 ? 'fill-current' : ''}`} />
                         </button>
-                        <span className="text-[10px] sm:text-xs font-medium text-[var(--text-muted)]">0</span>
-                        <button className="p-1 hover:text-red-500 hover:bg-red-50/10 rounded transition-colors" title="Bad deal">
+                        <span className={`text-[10px] sm:text-xs font-medium ${userVote === 1 ? 'text-green-500' : userVote === -1 ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
+                            {votes > 0 ? `+${votes}` : votes}
+                        </span>
+                        <button
+                            onClick={(e) => handleVote(e, -1)}
+                            className={`p-1 rounded transition-colors ${userVote === -1 ? 'text-red-500 bg-red-500/10' : 'hover:text-red-500 hover:bg-red-50/10'}`}
+                            title="Bad deal"
+                        >
                             <span className="sr-only">Downvote</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 sm:w-4 sm:h-4"><path d="M17 14V2" /><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z" /></svg>
+                            <ThumbsDown className={`w-3 h-3 sm:w-4 sm:h-4 ${userVote === -1 ? 'fill-current' : ''}`} />
                         </button>
                     </div>
 
