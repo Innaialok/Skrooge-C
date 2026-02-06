@@ -14,6 +14,7 @@ interface RSSItem {
     description: string;
     pubDate: string;
     category?: string;
+    metaLink?: string; // extracted from ozb:meta
 }
 
 export class OzBargainScraper extends BaseScraper {
@@ -112,6 +113,10 @@ export class OzBargainScraper extends BaseScraper {
             const pubDate = this.extractTag(itemXml, 'pubDate');
             const category = this.extractTag(itemXml, 'category');
 
+            // Extract ozb:meta link attribute
+            const metaLinkMatch = itemXml.match(/<ozb:meta[^>]*link=["']([^"']+)["']/i);
+            const metaLink = metaLinkMatch ? metaLinkMatch[1] : undefined;
+
             if (title && link) {
                 items.push({
                     title: this.decodeHtmlEntities(title),
@@ -119,6 +124,7 @@ export class OzBargainScraper extends BaseScraper {
                     description: this.decodeHtmlEntities(description || ''),
                     pubDate: pubDate || '',
                     category: category || undefined,
+                    metaLink,
                 });
             }
         }
@@ -172,17 +178,19 @@ export class OzBargainScraper extends BaseScraper {
         const imageMatch = item.description.match(/<img[^>]+src=["']([^"']+)["']/i);
         const imageUrl = imageMatch ? imageMatch[1] : undefined;
 
-        // Extract actual retailer/deal URL from description
-        // Priority 1: Look for "Go to Deal" type links
-        const retailerUrlMatch = item.description.match(/<a[^>]+href=["']([^"']+)["'][^>]*>.*?(?:Go to Deal|View Deal|Buy Now|Shop Now|Get Deal)/i);
+        // Extract actual retailer/deal URL
+        // Priority 1: ozb:meta link (Most reliable direct link)
+        // Priority 2: "Go to Deal" type links in description
+        // Priority 3: Any non-OzBargain link
+        // Fallback: Default item link (OzBargain discussion page)
 
-        // Priority 2: Look for OzBargain /goto/ redirect links (these redirect to retailer)
-        const gotoMatch = item.description.match(/href=["'](https?:\/\/(?:www\.)?ozbargain\.com\.au\/goto\/[^"']+)["']/i);
+        let retailerUrl = item.metaLink;
 
-        // Priority 3: Look for any non-OzBargain link
-        const altUrlMatch = item.description.match(/<a[^>]+href=["'](https?:\/\/(?!www\.ozbargain)[^"']+)["']/i);
-
-        const retailerUrl = retailerUrlMatch?.[1] || gotoMatch?.[1] || altUrlMatch?.[1] || item.link;
+        if (!retailerUrl) {
+            const retailerUrlMatch = item.description.match(/<a[^>]+href=["']([^"']+)["'][^>]*>.*?(?:Go to Deal|View Deal|Buy Now|Shop Now|Get Deal)/i);
+            const altUrlMatch = item.description.match(/<a[^>]+href=["'](https?:\/\/(?!www\.ozbargain)[^"']+)["']/i);
+            retailerUrl = retailerUrlMatch?.[1] || altUrlMatch?.[1] || item.link;
+        }
 
         // Calculate original price if mentioned
         let originalPrice: number | undefined;
@@ -200,6 +208,7 @@ export class OzBargainScraper extends BaseScraper {
         const cleanDescription = item.description
             .replace(/<[^>]+>/g, ' ')
             .replace(/\s+/g, ' ')
+            .replace(/&nbsp;/g, ' ')
             .trim()
             .substring(0, 500);
 
@@ -212,13 +221,13 @@ export class OzBargainScraper extends BaseScraper {
             price: price || 0,
             originalPrice,
             discount,
-            url: retailerUrl,  // Use retailer URL instead of OzBargain link
+            url: retailerUrl,
             imageUrl,
             retailerName,
             source: 'ozbargain',
             externalId: this.extractDealId(item.link),
             dealType: detectDealType(item.title, retailerName),
-            category,  // Add detected category
+            category,
         };
     }
 
