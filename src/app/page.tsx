@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic'
 import { Flame, Clock } from 'lucide-react'
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
-import SearchBar from '@/components/SearchBar'
 import prisma from '@/lib/prisma'
 
 async function getHotDeals() {
@@ -48,11 +47,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Search Header - sticky below mobile header on mobile, at top on desktop */}
-      <div className="sticky top-0 lg:top-0 z-30 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-4 sm:px-6 py-3 sm:py-4">
-        <SearchBar />
-      </div>
-
       <div className="p-4 sm:p-6">
         {/* Hot Deals Section */}
         <section className="mb-8 sm:mb-10">
