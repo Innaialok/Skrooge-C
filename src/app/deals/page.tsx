@@ -1,57 +1,90 @@
 // Force dynamic rendering to show fresh data
 export const dynamic = 'force-dynamic'
 
-import { Flame, Filter, Search } from 'lucide-react'
+import { Flame, Filter, Search, ShoppingCart, Tag, Ticket, Plane, ArrowLeft } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import prisma from '@/lib/prisma'
+import Link from 'next/link'
 
-async function getDeals() {
+// Deal type display config
+const dealTypeConfig: Record<string, { title: string; icon: string; description: string }> = {
+    product: { title: 'Product Deals', icon: '🛒', description: 'Specific products at discounted prices' },
+    store: { title: 'Store Sales', icon: '🏷️', description: 'Sitewide or category-wide discounts' },
+    cashback: { title: 'Cashback Deals', icon: '💰', description: 'Get money back on purchases' },
+    coupon: { title: 'Coupons', icon: '🎟️', description: 'Promo codes and vouchers' },
+    travel: { title: 'Travel Deals', icon: '✈️', description: 'Flights, hotels, and more' },
+}
+
+interface PageProps {
+    searchParams: Promise<{ type?: string }>
+}
+
+async function getDeals(type?: string) {
+    const whereClause: Record<string, unknown> = {
+        isExpired: false,
+    }
+
+    if (type && type !== 'all') {
+        whereClause.dealType = type
+    }
+
     const deals = await prisma.deal.findMany({
-        where: {
-            isExpired: false,
-        },
+        where: whereClause,
         include: {
             product: true,
             retailer: true,
         },
         orderBy: { createdAt: 'desc' },
-        take: 20,
+        take: 50,
     })
 
     return deals
 }
 
-export default async function DealsPage() {
-    const deals = await getDeals()
+export default async function DealsPage({ searchParams }: PageProps) {
+    const params = await searchParams
+    const dealType = params.type || undefined
+    const deals = await getDeals(dealType)
+
+    const config = dealType ? dealTypeConfig[dealType] : null
 
     return (
         <div className="min-h-screen">
             {/* Search Header */}
-            <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200 px-6 py-4">
+            <div className="sticky top-0 z-30 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-6 py-4">
                 <div className="flex items-center gap-4">
                     <div className="relative flex-1 max-w-xl">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                         <input
                             type="text"
                             placeholder="Search deals..."
-                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                         />
                     </div>
-                    <button className="btn-secondary flex items-center gap-2">
-                        <Filter className="w-4 h-4" />
-                        Filters
-                    </button>
                 </div>
             </div>
 
             <div className="p-6">
+                {/* Header with back button if filtered */}
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
-                        <Flame className="w-5 h-5 text-white" />
+                    {config && (
+                        <Link
+                            href="/deals"
+                            className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5 text-[var(--text-muted)]" />
+                        </Link>
+                    )}
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg text-xl">
+                        {config ? config.icon : <Flame className="w-5 h-5 text-white" />}
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">All Deals</h1>
-                        <p className="text-sm text-gray-500">{deals.length} deals available</p>
+                        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+                            {config ? config.title : 'All Deals'}
+                        </h1>
+                        <p className="text-sm text-[var(--text-muted)]">
+                            {config ? config.description : `${deals.length} deals available`}
+                        </p>
                     </div>
                 </div>
 
@@ -75,10 +108,18 @@ export default async function DealsPage() {
                 </div>
 
                 {deals.length === 0 && (
-                    <div className="text-center py-16 text-gray-500">
-                        <Flame className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                        <p className="text-xl">No deals found</p>
+                    <div className="text-center py-16 text-[var(--text-muted)]">
+                        <div className="text-6xl mb-4">{config?.icon || '🔍'}</div>
+                        <p className="text-xl">No {config?.title.toLowerCase() || 'deals'} found</p>
                         <p className="mt-2">Check back soon for new deals!</p>
+                        {config && (
+                            <Link
+                                href="/deals"
+                                className="inline-block mt-4 px-4 py-2 rounded-xl bg-[var(--accent)] text-white hover:opacity-90 transition-opacity"
+                            >
+                                View All Deals
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>

@@ -25,8 +25,17 @@ import { useTheme } from '@/context/ThemeContext'
 
 const navItems = [
     { href: '/', icon: Home, label: 'Home' },
-    { href: '/deals', icon: Flame, label: 'Hot Deals' },
+    { href: '/deals', icon: Flame, label: 'All Deals' },
     { href: '/trending', icon: TrendingUp, label: 'Trending' },
+]
+
+// Deal type filter items
+const dealTypeItems = [
+    { href: '/deals?type=product', icon: '🛒', label: 'Product Deals' },
+    { href: '/deals?type=store', icon: '🏷️', label: 'Store Sales' },
+    { href: '/deals?type=cashback', icon: '💰', label: 'Cashback' },
+    { href: '/deals?type=coupon', icon: '🎟️', label: 'Coupons' },
+    { href: '/deals?type=travel', icon: '✈️', label: 'Travel' },
 ]
 
 const userItems = [
@@ -141,6 +150,30 @@ export default function Sidebar() {
                         </Link>
                     )
                 })}
+
+                {/* Deal Types Section */}
+                <div className="pt-4">
+                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-3">
+                        Deal Types
+                    </p>
+                    {dealTypeItems.map((item) => {
+                        const isActive = pathname + (typeof window !== 'undefined' ? window.location.search : '') === item.href
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${isActive
+                                    ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
+                                    }`}
+                            >
+                                <span className="text-base w-5 text-center shrink-0">{item.icon}</span>
+                                <span className="font-medium text-sm">{item.label}</span>
+                            </Link>
+                        )
+                    })}
+                </div>
 
                 {/* Categories Dropdown */}
                 <div className="relative">

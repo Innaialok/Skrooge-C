@@ -188,6 +188,24 @@ export function detectDealType(title: string, retailerName: string): string {
         return 'cashback';
     }
 
+    // Coupon/code deals
+    if (lowerTitle.includes('coupon') ||
+        lowerTitle.includes('promo code') ||
+        lowerTitle.includes('discount code') ||
+        lowerTitle.includes('voucher')) {
+        return 'coupon';
+    }
+
+    // Store-wide sales (% off entire store/category)
+    if (lowerTitle.match(/\d+%\s*off/i) &&
+        (lowerTitle.includes('sale') ||
+            lowerTitle.includes('sitewide') ||
+            lowerTitle.includes('store') ||
+            lowerTitle.includes('everything') ||
+            lowerTitle.includes('all '))) {
+        return 'store';
+    }
+
     // Travel deals
     if (lowerTitle.includes('flight') ||
         lowerTitle.includes('airline') ||
@@ -198,14 +216,6 @@ export function detectDealType(title: string, retailerName: string): string {
         lowerRetailer.includes('flightfinder') ||
         lowerRetailer.includes('expedia')) {
         return 'travel';
-    }
-
-    // Service deals (banks, subscriptions)
-    if (lowerTitle.includes('open a') ||
-        lowerTitle.includes('sign up') ||
-        lowerTitle.includes('subscription') ||
-        lowerRetailer.includes('bank')) {
-        return 'service';
     }
 
     return 'product';

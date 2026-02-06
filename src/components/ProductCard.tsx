@@ -22,8 +22,9 @@ interface ProductCardProps {
 // Deal type badge configurations
 const dealTypeBadges: Record<string, { label: string; bg: string; icon: string }> = {
     cashback: { label: 'Cashback', bg: 'linear-gradient(135deg, #9333ea, #7c3aed)', icon: '💰' },
+    store: { label: 'Sale', bg: 'linear-gradient(135deg, #f97316, #ea580c)', icon: '🏷️' },
+    coupon: { label: 'Coupon', bg: 'linear-gradient(135deg, #22c55e, #16a34a)', icon: '🎟️' },
     travel: { label: 'Travel', bg: 'linear-gradient(135deg, #0ea5e9, #0369a1)', icon: '✈️' },
-    service: { label: 'Service', bg: 'linear-gradient(135deg, #f59e0b, #d97706)', icon: '📋' },
 }
 
 export default function ProductCard({
