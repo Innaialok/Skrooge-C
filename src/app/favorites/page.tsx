@@ -180,7 +180,7 @@ export default function FavoritesPage() {
                                             </div>
 
                                             <a
-                                                href={fav.product.lowestDeal.url}
+                                                href={`/go/${fav.product.lowestDeal.id}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="p-2.5 rounded-xl text-white transition-all hover:scale-105"
