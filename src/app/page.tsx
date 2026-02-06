@@ -66,7 +66,7 @@ export default async function Home() {
           </div>
 
           {hotDeals.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
               {hotDeals.map((deal) => (
                 <ProductCard
                   key={deal.id}
@@ -110,7 +110,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {recentDeals.map((deal) => (
               <ProductCard
                 key={deal.id}
