@@ -173,10 +173,16 @@ export class OzBargainScraper extends BaseScraper {
         const imageUrl = imageMatch ? imageMatch[1] : undefined;
 
         // Extract actual retailer/deal URL from description
-        // OzBargain descriptions usually contain the actual link in an <a> tag
+        // Priority 1: Look for "Go to Deal" type links
         const retailerUrlMatch = item.description.match(/<a[^>]+href=["']([^"']+)["'][^>]*>.*?(?:Go to Deal|View Deal|Buy Now|Shop Now|Get Deal)/i);
+
+        // Priority 2: Look for OzBargain /goto/ redirect links (these redirect to retailer)
+        const gotoMatch = item.description.match(/href=["'](https?:\/\/(?:www\.)?ozbargain\.com\.au\/goto\/[^"']+)["']/i);
+
+        // Priority 3: Look for any non-OzBargain link
         const altUrlMatch = item.description.match(/<a[^>]+href=["'](https?:\/\/(?!www\.ozbargain)[^"']+)["']/i);
-        const retailerUrl = retailerUrlMatch?.[1] || altUrlMatch?.[1] || item.link;
+
+        const retailerUrl = retailerUrlMatch?.[1] || gotoMatch?.[1] || altUrlMatch?.[1] || item.link;
 
         // Calculate original price if mentioned
         let originalPrice: number | undefined;
