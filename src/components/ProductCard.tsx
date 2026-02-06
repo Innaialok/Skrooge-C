@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
+import { Share2, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { toast } from 'sonner'
 import FavoriteButton from './FavoriteButton'
 
 interface ProductCardProps {

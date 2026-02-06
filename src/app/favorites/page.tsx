@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Heart, Loader2, ExternalLink, Trash2, ShoppingBag } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Favorite {
     id: string
@@ -62,8 +63,10 @@ export default function FavoritesPage() {
         try {
             await fetch(`/api/favorites/${productId}`, { method: 'DELETE' })
             setFavorites(favorites.filter(f => f.productId !== productId))
+            toast.success("Removed from favorites")
         } catch (error) {
             console.error('Error removing favorite:', error)
+            toast.error("Failed to remove favorite")
         } finally {
             setRemovingId(null)
         }

@@ -1,8 +1,7 @@
-'use client'
-
 import { useState } from 'react'
 import { MessageCircle, Send, ThumbsUp, Reply } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 interface Comment {
     id: string
@@ -54,11 +53,15 @@ export default function DiscussionBoard({ productId }: { productId: string }) {
 
     const handleSubmitComment = () => {
         if (!newComment.trim()) return
+        if (!session?.user?.id) {
+            toast.error("Please sign in to post a comment")
+            return
+        }
 
         const comment: Comment = {
             id: Date.now().toString(),
-            author: 'You',
-            avatar: 'Y',
+            author: session.user.name || 'User',
+            avatar: session.user.image || 'Y',
             content: newComment,
             timestamp: 'Just now',
             likes: 0,
@@ -66,6 +69,7 @@ export default function DiscussionBoard({ productId }: { productId: string }) {
         }
         setComments([comment, ...comments])
         setNewComment('')
+        toast.success("Comment posted successfully!")
     }
 
     const handleSubmitReply = (parentId: string) => {

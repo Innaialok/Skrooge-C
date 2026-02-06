@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, User, ArrowRight, Loader2, DollarSign } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -33,7 +34,9 @@ export default function LoginPage() {
 
                 if (result?.error) {
                     setError(result.error)
+                    toast.error("Sign in failed: " + result.error) // Add simplified error toast
                 } else {
+                    toast.success("Welcome back!")
                     router.push('/')
                     router.refresh()
                 }
@@ -49,6 +52,7 @@ export default function LoginPage() {
 
                 if (!res.ok) {
                     setError(data.error || 'Registration failed')
+                    toast.error(data.error || "Registration failed")
                 } else {
                     // Auto login after registration
                     const result = await signIn('credentials', {
@@ -58,6 +62,7 @@ export default function LoginPage() {
                     })
 
                     if (result?.ok) {
+                        toast.success("Account created successfully!")
                         router.push('/')
                         router.refresh()
                     }
@@ -65,6 +70,7 @@ export default function LoginPage() {
             }
         } catch (err) {
             setError('An error occurred. Please try again.')
+            toast.error("An unexpected error occurred")
         } finally {
             setIsLoading(false)
         }
