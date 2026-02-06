@@ -5,9 +5,9 @@
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { OzBargainScraper } from '@/lib/scraper/sources/ozbargain';
 import { processDeals } from '@/lib/scraper/processor';
 import { scraperLog } from '@/lib/scraper';
+import { ScraperManager } from '@/lib/scraper/manager';
 
 export async function POST(request: Request) {
     try {
@@ -24,20 +24,19 @@ export async function POST(request: Request) {
         const body = await request.json().catch(() => ({}));
         const source = body.source || 'ozbargain';
 
+        const manager = ScraperManager.getInstance();
+        const supportedSources = manager.getSupportedSources();
+
+        if (!supportedSources.includes(source)) {
+            return NextResponse.json(
+                { error: `Unknown source: ${source}. Supported: ${supportedSources.join(', ')}` },
+                { status: 400 }
+            );
+        }
+
         scraperLog.info('api', `Starting scrape for source: ${source}`);
 
-        let result;
-        switch (source) {
-            case 'ozbargain':
-                const scraper = new OzBargainScraper();
-                result = await scraper.scrape();
-                break;
-            default:
-                return NextResponse.json(
-                    { error: `Unknown source: ${source}` },
-                    { status: 400 }
-                );
-        }
+        let result = await manager.runScraper(source);
 
         if (!result.success) {
             return NextResponse.json(
